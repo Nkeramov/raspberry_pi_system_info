@@ -4,8 +4,9 @@ import time
 from logging import Logger
 from typing import Any
 
-from flask import Flask, Response, abort, after_this_request, flash, render_template, url_for
+from flask import Flask, Response, after_this_request, flash, render_template, url_for
 from flask_caching import Cache
+from werkzeug.exceptions import NotFound
 
 from ..config import AppConfig
 from ..core.cache_manager import CacheManager
@@ -16,56 +17,55 @@ from ..core.system_info import RPiSystemInfo
 
 
 def register(
-        app: Flask,
-        config: AppConfig,
-        cache: Cache,
-        metrics_cache_manager: CacheManager,
-        rpi_info: RPiSystemInfo,
-        logger: Logger,
-    ) -> None:
-    @app.route('/')
+    app: Flask,
+    config: AppConfig,
+    cache: Cache,
+    metrics_cache_manager: CacheManager,
+    rpi_info: RPiSystemInfo,
+    logger: Logger,
+) -> None:
+    @app.route("/")
     @cache.cached(timeout=config.PAGE_CACHE_TIMEOUT)
     def index() -> str:
-        logger.info('Requested index page')
-        return render_template('index.html', title=config.PAGE_TITLE, index_url=url_for('index'))
+        logger.info("Requested index page")
+        return render_template("index.html", title=config.PAGE_TITLE, index_url=url_for("index"))
 
-
-    @app.route('/partial/<section>')
+    @app.route("/partial/<section>")
     @cache.cached(timeout=config.PAGE_CACHE_TIMEOUT)
     def partial_section(section: str) -> str:
-        logger.info(f'Requested {section} tab')
+        logger.info(f"Requested {section} tab")
         data: dict[str, Any]
-        if section == 'generic':
+        if section == "generic":
             hardware_data = metrics_cache_manager.get_hardware()
             network_data = metrics_cache_manager.get_network()
             data = get_generic_data(rpi_info, config, hardware_data, network_data)
-            return render_template('partials/generic.html', **data)
-        elif section == 'hardware':
+            return render_template("partials/generic.html", **data)
+        elif section == "hardware":
             data = metrics_cache_manager.get_hardware()
-            return render_template('partials/hardware.html', **data)
-        elif section == 'networks':
+            return render_template("partials/hardware.html", **data)
+        elif section == "networks":
             data = metrics_cache_manager.get_network()
-            return render_template('partials/networks.html', **data)
-        elif section == 'storage':
+            return render_template("partials/networks.html", **data)
+        elif section == "storage":
             data = metrics_cache_manager.get_storage()
-            return render_template('partials/storage.html', **data)
-        elif section == 'processes':
+            return render_template("partials/storage.html", **data)
+        elif section == "processes":
             data = metrics_cache_manager.get_processes()
-            return render_template('partials/processes.html', **data)
+            return render_template("partials/processes.html", **data)
         else:
-            abort(404)
+            raise NotFound()
 
-    @app.route('/reboot')
+    @app.route("/reboot")
     def restart() -> str:
-        logger.info('Reboot initiated from web interface')
+        logger.info("Reboot initiated from web interface")
         messages = [
-            'Rebooting... please wait.',
-            'This will take approx. one minute.',
-            'This page will not automatically refresh.',
-            'You will need to manually reconnect to the system after a restart.',
+            "Rebooting... please wait.",
+            "This will take approx. one minute.",
+            "This page will not automatically refresh.",
+            "You will need to manually reconnect to the system after a restart.",
         ]
         for message in messages:
-            flash(message, 'info')
+            flash(message, "info")
 
         @after_this_request
         def delayed_restart(response: Response) -> Response:
@@ -76,19 +76,19 @@ def register(
             threading.Thread(target=restart_thread).start()
             return response
 
-        return render_template('system_action_pending.html', title=config.PAGE_TITLE, index_url=url_for('index'))
+        return render_template("system_action_pending.html", title=config.PAGE_TITLE, index_url=url_for("index"))
 
-    @app.route('/shutdown')
+    @app.route("/shutdown")
     def shutdown() -> str:
-        logger.info('Shutdown initiated from web interface')
+        logger.info("Shutdown initiated from web interface")
         messages = [
-            'Shutting down... please wait',
-            'When the LEDs on the board stop flashing, it should be safe to unplug your Raspberry Pi.',
-            'This page will not automatically refresh.',
-            'You will need to manually reconnect to the system after a restart.',
+            "Shutting down... please wait",
+            "When the LEDs on the board stop flashing, it should be safe to unplug your Raspberry Pi.",
+            "This page will not automatically refresh.",
+            "You will need to manually reconnect to the system after a restart.",
         ]
         for message in messages:
-            flash(message, 'info')
+            flash(message, "info")
 
         @after_this_request
         def delayed_shutdown(response: Response) -> Response:
@@ -99,5 +99,4 @@ def register(
             threading.Thread(target=shutdown_thread).start()
             return response
 
-        return render_template('system_action_pending.html', title=config.PAGE_TITLE, index_url=url_for('index'))
-
+        return render_template("system_action_pending.html", title=config.PAGE_TITLE, index_url=url_for("index"))

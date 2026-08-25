@@ -11,18 +11,18 @@ class AppConfig:
     PORT: int = 8080
 
     PAGE_CACHE_TIMEOUT: int = 10
-    PAGE_TITLE: str = 'Raspberry Pi System Info'
+    PAGE_TITLE: str = "Raspberry Pi System Info"
 
     METRICS_UPDATE_INTERVAL: int = 30
     METRICS_TTL: int = 60
 
-    USAGE_NORMAL_COLOR: str ="#00FF40"
-    USAGE_WARNING_COLOR: str ="#FF8C00"
-    USAGE_CRITICAL_COLOR: str ="#CC0000"
+    USAGE_NORMAL_COLOR: str = "#00FF40"
+    USAGE_WARNING_COLOR: str = "#FF8C00"
+    USAGE_CRITICAL_COLOR: str = "#CC0000"
 
-    TEMP_NORMAL_COLOR: str ="#00FF40"
-    TEMP_WARNING_COLOR: str ="#FF8C00"
-    TEMP_CRITICAL_COLOR: str ="#CC0000"
+    TEMP_NORMAL_COLOR: str = "#00FF40"
+    TEMP_WARNING_COLOR: str = "#FF8C00"
+    TEMP_CRITICAL_COLOR: str = "#CC0000"
 
     USAGE_WARNING_THRESHOLD: float = 65.0
     USAGE_CRITICAL_THRESHOLD: float = 85.0
@@ -40,8 +40,8 @@ class AppConfig:
     SECRET_KEY: str = "dev-secret-key"
 
     @classmethod
-    def from_env(cls) -> 'AppConfig':
-        load_dotenv('.env')
+    def from_env(cls) -> "AppConfig":
+        load_dotenv(".env")
         secret_key = os.getenv("SECRET_KEY")
         if secret_key is None:
             secret_key = secrets.token_hex(32)

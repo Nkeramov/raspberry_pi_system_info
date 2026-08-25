@@ -17,7 +17,7 @@ dependencies = [
     "Flask-Caching>=2.4.1",
     "python-dotenv>=1.2.2",
 ]
-keywords = [ 
+keywords = [
     "rpi",
     "raspberrypi",
     "raspberry-pi",
@@ -86,6 +86,7 @@ exclude = [
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+src = ["src", "tests"]
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/rules/
@@ -110,3 +111,6 @@ quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
 skip-magic-trailing-comma = false
+
+[tool.ruff.lint.isort]
+known-first-party = ["rpi_system_info"]

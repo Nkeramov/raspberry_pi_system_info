@@ -1,7 +1,7 @@
 from threading import RLock
 from typing import Any, ClassVar, TypeVar, cast
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class Singleton(type):
@@ -19,7 +19,7 @@ class Singleton(type):
                 # An instance of the class already exists
                 instance = singleton_cls._instances[cls]
                 # Here we are going to call the __init__ and maybe reinitialize
-                if getattr(cls, '__allow_reinitialization', False):
+                if getattr(cls, "__allow_reinitialization", False):
                     # If the class allows reinitialization, then do it
                     instance.__init__(*args, **kwargs)
         return cast(T, instance)

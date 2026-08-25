@@ -14,8 +14,8 @@ This project is a simple web server that displays system information about your 
 </div>
 
 The interface is divided into 5 tabs:
-- 1️⃣  *General*: 
-    - Board Info: host name, operating system, system time and uptime, model, revision, manufacturer, serial number. 
+- 1️⃣  *General*:
+    - Board Info: host name, operating system, system time and uptime, model, revision, manufacturer, serial number.
     - Key Metrics: CPU metrics (usage, temperature, core frequency), RAM metrics (total, available), IP addresses of network interfaces eth0 and wlan0, internet connection status and public IP (if connection is active).
 - 2️⃣  *Hardware*:
     - CPU Info: model, architecture, cores count, cores frequency (current, min, max), cores voltage, temperature, usage, cache sizes, overvoltage allowed, OTP programming allowed, OTP reading allowed).
@@ -45,17 +45,17 @@ The web server is based on Flask framework. Gunicorn is used to launch. By defau
 
 ### Prerequisites
 Clone repository:
-```bash 
+```bash
 git clone https://github.com/Nkeramov/rpi_system_info.git
 ```
 Switch to repo directory:
-```bash 
+```bash
 cd rpi_system_info
 ```
 ### Traditional method with venv and pip
 Create and activate virtual environment:
-```bash 
-python -m venv .venv 
+```bash
+python -m venv .venv
 source .venv/bin/activate
 ```
 Install dependencies and run:
@@ -83,7 +83,7 @@ Also you can use the launch script `run.sh`, making it executable first
 chmod +x run.sh
 ```
 
-## 🛠️  Configuration 
+## 🛠️  Configuration
 
 The configuration file is located in the `.env` file. You can copy the `env.example` to `.env` and make your edits.
 ```bash
@@ -136,7 +136,7 @@ If you want to contribute, please follow these steps:
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## 📚 References 
+## 📚 References
 
 - [Getting started](https://www.raspberrypi.com/documentation/computers/getting-started.html)
 - [Raspberry Pi OS](https://www.raspberrypi.com/documentation/computers/os.html)

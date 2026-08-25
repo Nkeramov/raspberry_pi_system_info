@@ -17,6 +17,7 @@ class CustomColoredFormatter(logging.Formatter):
     Class Attributes:
         LEVEL_COLORS (dict): Mapping of log level numbers to ANSI color codes.
     """
+
     LEVEL_COLORS: ClassVar[dict[int, str]] = {
         logging.DEBUG: Fore.LIGHTBLUE_EX,
         logging.INFO: Fore.LIGHTGREEN_EX,
@@ -25,12 +26,11 @@ class CustomColoredFormatter(logging.Formatter):
         logging.CRITICAL: Fore.LIGHTRED_EX + Style.BRIGHT,
     }
 
-
     def __init__(
-            self,
-            fmt: str | None = None,
-            datefmt: str | None = None,
-            colors: dict[str, str] | None = None,
+        self,
+        fmt: str | None = None,
+        datefmt: str | None = None,
+        colors: dict[str, str] | None = None,
     ) -> None:
         """
         Initialize the colored formatter.
@@ -51,7 +51,7 @@ class CustomColoredFormatter(logging.Formatter):
                 {
                     getattr(logging, k.upper()): v
                     for k, v in colors.items()
-                    if k.upper() in ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
+                    if k.upper() in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
                 },
             )
 
@@ -102,13 +102,14 @@ class LoggerSingleton(metaclass=Singleton):
         DEFAULT_FORMAT (str): Default log message format.
         DFLT_DATE_FMT (str): Default date/time format.
     """
-    __logger: Logger = logging.getLogger('SuperLogger')
+
+    __logger: Logger = logging.getLogger("SuperLogger")
     __allow_reinitialization: bool = False
     _initialized: bool = False
     _config: LoggerConfig = LoggerConfig()
 
-    DEFAULT_FORMAT = '%(asctime)s | %(levelname)s | %(module)s | %(funcName)s | %(message)s'
-    DFLT_DATE_FMT = '%Y-%m-%d %H:%M:%S'
+    DEFAULT_FORMAT = "%(asctime)s | %(levelname)s | %(module)s | %(funcName)s | %(message)s"
+    DFLT_DATE_FMT = "%Y-%m-%d %H:%M:%S"
 
     def __init__(
         self,
@@ -242,7 +243,6 @@ class LoggerSingleton(metaclass=Singleton):
             "file_date_format": file_date_format,
             "kwargs": kwargs,
         }
-
 
     def _add_stream_handler(
         self,

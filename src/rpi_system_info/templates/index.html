@@ -6,7 +6,7 @@
         <link rel="icon" type="image/png" href="static/images/favicon.png">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="System information of Raspberry Pi">
-        <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">        
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
         <script src="{{ url_for('static', filename='js/sort.js') }}"></script>
     </head>
@@ -91,7 +91,7 @@
             const newUrl = window.location.pathname + '?' + params.toString();
             history.pushState({ tab: tabId }, '', newUrl);
         }
-    
+
         function loadTabContent(tabId) {
             const container = document.getElementById(tabId + '-content');
             if (!container) return;

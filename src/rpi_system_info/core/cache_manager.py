@@ -33,8 +33,8 @@ class CacheManager:
         self.config = config
         self.logger = logger
 
-        self.update_interval = getattr(config, 'METRICS_UPDATE_INTERVAL', 15)
-        self.ttl = getattr(config, 'METRICS_TTL', 30)
+        self.update_interval = getattr(config, "METRICS_UPDATE_INTERVAL", 15)
+        self.ttl = getattr(config, "METRICS_TTL", 30)
         self.background_updates = background_updates
 
         self._cache: dict[str, CacheEntry] = {}
@@ -44,10 +44,10 @@ class CacheManager:
 
         provider = tuple[Callable[..., dict[str, Any]], tuple[Any, ...], dict[Any, Any]]
         self._providers: dict[str, provider] = {
-            'hardware': (get_hardware_data, (self.rpi_info, self.config), {}),
-            'network': (get_network_data, (self.rpi_info,), {}),
-            'storage': (get_storage_data, (self.rpi_info,), {}),
-            'processes': (get_processes_data, (self.rpi_info, self.config), {}),
+            "hardware": (get_hardware_data, (self.rpi_info, self.config), {}),
+            "network": (get_network_data, (self.rpi_info,), {}),
+            "storage": (get_storage_data, (self.rpi_info,), {}),
+            "processes": (get_processes_data, (self.rpi_info, self.config), {}),
         }
 
         self._update_all()
@@ -68,7 +68,7 @@ class CacheManager:
         with self._lock:
             for key in self._providers:
                 entry = self._cache.get(key)
-                timestamps[key] = entry['timestamp'] if entry and 'timestamp' in entry else 0.0
+                timestamps[key] = entry["timestamp"] if entry and "timestamp" in entry else 0.0
         sorted_keys = sorted(timestamps.keys(), key=lambda k: timestamps[k])
 
         for key in sorted_keys:
@@ -77,8 +77,8 @@ class CacheManager:
                 data = func(*args, **kwargs)
                 with self._lock:
                     self._cache[key] = {
-                        'data': data,
-                        'timestamp': time.time(),
+                        "data": data,
+                        "timestamp": time.time(),
                     }
                 self.logger.debug(f"Successfully updated in the background: {key}")
             except Exception as e:
@@ -99,8 +99,8 @@ class CacheManager:
         with self._lock:
             entry = self._cache.get(key)
             now = time.time()
-            if entry and (now - entry['timestamp']) <= self.ttl:
-                return entry['data']
+            if entry and (now - entry["timestamp"]) <= self.ttl:
+                return entry["data"]
 
         if key not in self._providers:
             raise KeyError(f"Unknown provider key: {key}")
@@ -110,8 +110,8 @@ class CacheManager:
             new_data = func(*args, **kwargs)
             with self._lock:
                 self._cache[key] = {
-                    'data': new_data,
-                    'timestamp': time.time(),
+                    "data": new_data,
+                    "timestamp": time.time(),
                 }
             self.logger.debug(f"Sync refresh: {key}")
             return new_data
@@ -119,19 +119,19 @@ class CacheManager:
             self.logger.error(f"Failed to refresh {key}: {e}")
             with self._lock:
                 entry = self._cache.get(key)
-                return entry['data'] if entry else cast(dict[str, Any], {})
+                return entry["data"] if entry else cast(dict[str, Any], {})
 
     def get_hardware(self) -> dict[str, Any]:
-        return self._get_or_refresh('hardware')
+        return self._get_or_refresh("hardware")
 
     def get_storage(self) -> dict[str, Any]:
-        return self._get_or_refresh('storage')
+        return self._get_or_refresh("storage")
 
     def get_network(self) -> dict[str, Any]:
-        return self._get_or_refresh('network')
+        return self._get_or_refresh("network")
 
     def get_processes(self) -> dict[str, Any]:
-        return self._get_or_refresh('processes')
+        return self._get_or_refresh("processes")
 
     def get(self, key: str) -> dict[str, Any]:
         return self._get_or_refresh(key)
@@ -139,7 +139,7 @@ class CacheManager:
     def get_timestamp(self, key: str) -> float | None:
         with self._lock:
             entry = self._cache.get(key)
-            return entry['timestamp'] if entry else None
+            return entry["timestamp"] if entry else None
 
     def force_refresh(self) -> None:
         """Forced synchronous update of all data."""
@@ -154,8 +154,8 @@ class CacheManager:
             data = func(*args, **kwargs)
             with self._lock:
                 self._cache[key] = {
-                    'data': data,
-                    'timestamp': time.time(),
+                    "data": data,
+                    "timestamp": time.time(),
                 }
             self.logger.info(f"Successfully force refresh of {key}")
         except Exception as e:

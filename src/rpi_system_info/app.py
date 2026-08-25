@@ -29,7 +29,9 @@ def create_app(config: AppConfig | None = None) -> Flask:
     app.logger.handlers = logger.handlers
     app.logger.setLevel(logger.level)
 
-    page_cache = Cache(app, config={
+    page_cache = Cache(
+        app,
+        config={
             "CACHE_TYPE": "SimpleCache",
             "CACHE_DEFAULT_TIMEOUT": config.PAGE_CACHE_TIMEOUT,
         },

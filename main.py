@@ -10,7 +10,7 @@ if __name__ == "__main__":
     config = AppConfig.from_env()
     app = create_app(config)
     try:
-        app.run(host='0.0.0.0', port=config.PORT, debug=False)
+        app.run(host="0.0.0.0", port=config.PORT, debug=False)
     except KeyboardInterrupt:
         print("Stopped")
     except Exception as e:

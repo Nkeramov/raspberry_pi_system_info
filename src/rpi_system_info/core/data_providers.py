@@ -14,11 +14,11 @@ from .utils.helpers import format_datetime
 
 
 def get_generic_data(
-        rpi_info: RPiSystemInfo,
-        config: AppConfig,
-        hardware_data: dict[str, dict[str, Any]] | None = None,
-        network_data: dict[str, Any] | None = None,
-    ) -> dict[str, dict[str, Any]]:
+    rpi_info: RPiSystemInfo,
+    config: AppConfig,
+    hardware_data: dict[str, dict[str, Any]] | None = None,
+    network_data: dict[str, Any] | None = None,
+) -> dict[str, dict[str, Any]]:
     """
     Return all data needed for the "Generic" tab.
 
@@ -40,36 +40,36 @@ def get_generic_data(
     system_time = datetime.now()
     system_time_str = format_datetime(system_time, config.TEXT_DATETIME_FORMAT)
     boot_time = rpi_info.boot_time
-    boot_time_str = format_datetime(boot_time, config.TEXT_DATETIME_FORMAT) if boot_time else ''
+    boot_time_str = format_datetime(boot_time, config.TEXT_DATETIME_FORMAT) if boot_time else ""
     if hardware_data is None:
         hardware_data = get_hardware_data(rpi_info, config)
     if network_data is None:
         network_data = get_network_data(rpi_info)
     return {
-        'board_info': {
-            'model_name': rpi_info.model_name,
-            'revision': rpi_info.revision,
-            'serial_number': rpi_info.serial_number,
-            'manufacturer': rpi_info.manufacturer,
-            'os': rpi_info.os_name,
-            'hostname': rpi_info.hostname,
-            'system_time': system_time_str,
-            'boot_time': boot_time_str,
-            'uptime_pretty': rpi_info.get_uptime_pretty(),
-            'internet_connection_status': rpi_info.check_internet_connection(),
-            'public_ip': rpi_info.get_public_ip(),
+        "board_info": {
+            "model_name": rpi_info.model_name,
+            "revision": rpi_info.revision,
+            "serial_number": rpi_info.serial_number,
+            "manufacturer": rpi_info.manufacturer,
+            "os": rpi_info.os_name,
+            "hostname": rpi_info.hostname,
+            "system_time": system_time_str,
+            "boot_time": boot_time_str,
+            "uptime_pretty": rpi_info.get_uptime_pretty(),
+            "internet_connection_status": rpi_info.check_internet_connection(),
+            "public_ip": rpi_info.get_public_ip(),
         },
-        'cpu_info': hardware_data['cpu_info'],
-        'ram_info': hardware_data['ram_info'],
-        'eth0_info': network_data['eth0_info'],
-        'wlan0_info': network_data['wlan0_info'],
+        "cpu_info": hardware_data["cpu_info"],
+        "ram_info": hardware_data["ram_info"],
+        "eth0_info": network_data["eth0_info"],
+        "wlan0_info": network_data["wlan0_info"],
     }
 
 
 def get_hardware_data(
-        rpi_info: RPiSystemInfo,
-        config: AppConfig,
-    ) -> dict[str, dict[str, Any]]:
+    rpi_info: RPiSystemInfo,
+    config: AppConfig,
+) -> dict[str, dict[str, Any]]:
     """
     Return all data needed for the "Hardware" tab.
 
@@ -87,16 +87,16 @@ def get_hardware_data(
             - 'gpu_details': dict as returned by get_gpu_data().
     """
     return {
-        'cpu_info': get_cpu_data(rpi_info, config),
-        'ram_info': get_ram_data(rpi_info, config),
-        'gpu_info': get_gpu_data(rpi_info),
+        "cpu_info": get_cpu_data(rpi_info, config),
+        "ram_info": get_ram_data(rpi_info, config),
+        "gpu_info": get_gpu_data(rpi_info),
     }
 
 
 def get_cpu_data(
-        rpi_info: RPiSystemInfo,
-        config: AppConfig,
-    ) -> dict[str, Any]:
+    rpi_info: RPiSystemInfo,
+    config: AppConfig,
+) -> dict[str, Any]:
     """
     Collect current CPU information.
 
@@ -146,28 +146,28 @@ def get_cpu_data(
     voltage = rpi_info.get_cpu_core_voltage()
     freqs = rpi_info.get_cpu_core_frequencies()
     return {
-        'model': rpi_info.cpu_model,
-        'architecture': rpi_info.cpu_architecture,
-        'cores_count': rpi_info.cpu_cores_count,
-        'min_core_frequency': freqs.get('min'),
-        'cur_core_frequency': freqs.get('cur'),
-        'max_core_frequency': freqs.get('max'),
-        'core_voltage': f"{voltage:.3f}" if voltage is not None else None,
-        'cache_sizes': rpi_info.cpu_cache_sizes,
-        'usage': usage,
-        'usage_color': usage_color,
-        'temperature': temperature,
-        'temperature_color': temperature_color,
-        'overvoltage_allowed': 'Yes' if rpi_info.overvoltage_allowed else 'No',
-        'otp_programming_allowed': 'Yes' if rpi_info.otp_programming_allowed else 'No',
-        'otp_reading_allowed': 'Yes' if rpi_info.otp_reading_allowed else 'No',
+        "model": rpi_info.cpu_model,
+        "architecture": rpi_info.cpu_architecture,
+        "cores_count": rpi_info.cpu_cores_count,
+        "min_core_frequency": freqs.get("min"),
+        "cur_core_frequency": freqs.get("cur"),
+        "max_core_frequency": freqs.get("max"),
+        "core_voltage": f"{voltage:.3f}" if voltage is not None else None,
+        "cache_sizes": rpi_info.cpu_cache_sizes,
+        "usage": usage,
+        "usage_color": usage_color,
+        "temperature": temperature,
+        "temperature_color": temperature_color,
+        "overvoltage_allowed": "Yes" if rpi_info.overvoltage_allowed else "No",
+        "otp_programming_allowed": "Yes" if rpi_info.otp_programming_allowed else "No",
+        "otp_reading_allowed": "Yes" if rpi_info.otp_reading_allowed else "No",
     }
 
 
 def get_ram_data(
-        rpi_info: RPiSystemInfo,
-        config: AppConfig,
-    ) -> dict[str, Any]:
+    rpi_info: RPiSystemInfo,
+    config: AppConfig,
+) -> dict[str, Any]:
     """
     Retrieve current RAM information.
 
@@ -184,14 +184,14 @@ def get_ram_data(
             - available (str): Estimation of how much memory is available (in MB).
     """
     ram_data = rpi_info.get_ram_info()
-    usage = ram_data['usage']
+    usage = ram_data["usage"]
     usage_color = config.USAGE_NORMAL_COLOR
     if usage is not None:
         if config.USAGE_WARNING_THRESHOLD < usage <= config.USAGE_CRITICAL_THRESHOLD:
             usage_color = config.USAGE_WARNING_COLOR
         elif usage > config.USAGE_CRITICAL_THRESHOLD:
             usage_color = config.USAGE_CRITICAL_COLOR
-    ram_data['usage_color'] = usage_color
+    ram_data["usage_color"] = usage_color
     return ram_data
 
 
@@ -214,13 +214,13 @@ def get_gpu_data(rpi_info: RPiSystemInfo) -> dict[str, Any]:
     """
     codecs_info = rpi_info.gpu_codecs_info
     return {
-        'memory_size': rpi_info.gpu_memory_size,
-        'H264': codecs_info['H264'],
-        'MPG2': codecs_info['MPG2'],
-        'WVC1': codecs_info['WVC1'],
-        'MPG4': codecs_info['MPG4'],
-        'MJPG': codecs_info['MJPG'],
-        'WMV9': codecs_info['WMV9'],
+        "memory_size": rpi_info.gpu_memory_size,
+        "H264": codecs_info["H264"],
+        "MPG2": codecs_info["MPG2"],
+        "WVC1": codecs_info["WVC1"],
+        "MPG4": codecs_info["MPG4"],
+        "MJPG": codecs_info["MJPG"],
+        "WMV9": codecs_info["WMV9"],
     }
 
 
@@ -245,11 +245,11 @@ def get_network_data(rpi_info: RPiSystemInfo) -> dict[str, Any]:
               'ssid' and 'signal' keys.
     """
     return {
-        'eth0_info': rpi_info.get_network_interface_info('eth0'),
-        'wlan0_info': rpi_info.get_network_interface_info('wlan0'),
-        'wifi_network_name': rpi_info.get_wifi_network_name(),
-        'bt_hci0_info': rpi_info.get_bluetooth_interface_info(),
-        'available_wifi_networks': rpi_info.get_available_wifi_networks(),
+        "eth0_info": rpi_info.get_network_interface_info("eth0"),
+        "wlan0_info": rpi_info.get_network_interface_info("wlan0"),
+        "wifi_network_name": rpi_info.get_wifi_network_name(),
+        "bt_hci0_info": rpi_info.get_bluetooth_interface_info(),
+        "available_wifi_networks": rpi_info.get_available_wifi_networks(),
     }
 
 
@@ -270,9 +270,9 @@ def get_storage_data(rpi_info: RPiSystemInfo) -> dict[str, Any]:
     sd_info = rpi_info.get_sd_card_info()
     first = sd_info[0] if sd_info else {}
     return {
-        'sd_card_info': first,
-        'disks_info': rpi_info.get_disks_info(),
-        'disks_inodes_info': rpi_info.get_disks_inodes_info(),
+        "sd_card_info": first,
+        "disks_info": rpi_info.get_disks_info(),
+        "disks_inodes_info": rpi_info.get_disks_inodes_info(),
     }
 
 
@@ -299,13 +299,13 @@ def get_processes_data(rpi_info: RPiSystemInfo, config: AppConfig) -> dict[str, 
     """
     processes = rpi_info.get_processes_info()
     for process in processes:
-        if process.get('started_on'):
-            process['started_on'] = format_datetime(process['started_on'], config.TEXT_DATETIME_FORMAT)
+        if process.get("started_on"):
+            process["started_on"] = format_datetime(process["started_on"], config.TEXT_DATETIME_FORMAT)
     tmux_sessions = rpi_info.get_tmux_sessions()
     for session in tmux_sessions:
-        if session.get('created'):
-            session['created'] = format_datetime(session['created'], config.TEXT_DATETIME_FORMAT)
+        if session.get("created"):
+            session["created"] = format_datetime(session["created"], config.TEXT_DATETIME_FORMAT)
     return {
-        'processes_info': processes,
-        'tmux_sessions_info': tmux_sessions,
+        "processes_info": processes,
+        "tmux_sessions_info": tmux_sessions,
     }

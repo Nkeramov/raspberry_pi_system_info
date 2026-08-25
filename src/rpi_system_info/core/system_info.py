@@ -18,6 +18,7 @@ from .utils.log_utils import LoggerSingleton
 
 Number: TypeAlias = int | float
 
+
 class ModelType(Enum):
     UNKNOWN = -100
 
@@ -68,7 +69,7 @@ class RPiSystemInfo(metaclass=Singleton):
     overvoltage_allowed: bool = field(init=False, default=False)
     otp_programming_allowed: bool = field(init=False, default=False)
     otp_reading_allowed: bool = field(init=False, default=False)
-    FrequencyUnit = Literal['Hz', 'KHz', 'MHz', 'GHz']
+    FrequencyUnit = Literal["Hz", "KHz", "MHz", "GHz"]
 
     def __post_init__(self) -> None:
         """Initialize Raspberry Pi hardware information.
@@ -81,21 +82,21 @@ class RPiSystemInfo(metaclass=Singleton):
         command = "cat /proc/cpuinfo | grep 'Revision' | cut -d: -f2"
         fetched_revision_code = self.__get_shell_cmd_output(command)
         self.logger.debug(f"Board revision code: {fetched_revision_code}")
-        object.__setattr__(self, 'revision_code', fetched_revision_code)
+        object.__setattr__(self, "revision_code", fetched_revision_code)
         try:
             decoded_data = RPiSystemInfo.decode_revision_code(fetched_revision_code)
             self.logger.debug(f"Successfully decoded revision code: {fetched_revision_code}")
-            object.__setattr__(self, 'model_type', decoded_data['model_type'])
-            object.__setattr__(self, 'revision', decoded_data['revision'])
-            object.__setattr__(self, 'manufacturer', decoded_data['manufacturer'])
-            object.__setattr__(self, 'cpu_model', decoded_data['cpu_model'])
-            object.__setattr__(self, 'memory_size', decoded_data['memory_size'])
-            if 'overvoltage_allowed' in decoded_data:
-                object.__setattr__(self, 'overvoltage_allowed', decoded_data['overvoltage_allowed'])
-            if 'otp_programming_allowed' in decoded_data:
-                object.__setattr__(self, 'otp_programming_allowed', decoded_data['otp_programming_allowed'])
-            if 'otp_reading_allowed' in decoded_data:
-                object.__setattr__(self, 'otp_reading_allowed', decoded_data['otp_reading_allowed'])
+            object.__setattr__(self, "model_type", decoded_data["model_type"])
+            object.__setattr__(self, "revision", decoded_data["revision"])
+            object.__setattr__(self, "manufacturer", decoded_data["manufacturer"])
+            object.__setattr__(self, "cpu_model", decoded_data["cpu_model"])
+            object.__setattr__(self, "memory_size", decoded_data["memory_size"])
+            if "overvoltage_allowed" in decoded_data:
+                object.__setattr__(self, "overvoltage_allowed", decoded_data["overvoltage_allowed"])
+            if "otp_programming_allowed" in decoded_data:
+                object.__setattr__(self, "otp_programming_allowed", decoded_data["otp_programming_allowed"])
+            if "otp_reading_allowed" in decoded_data:
+                object.__setattr__(self, "otp_reading_allowed", decoded_data["otp_reading_allowed"])
             self.logger.info("RPiSystemInfo initialized")
         except (ValueError, TypeError) as e:
             self.logger.error(f"Invalid revision code '{fetched_revision_code}': {e}")
@@ -105,13 +106,15 @@ class RPiSystemInfo(metaclass=Singleton):
             raise RuntimeError(f"RPiSystemInfo initialization failed: {e}") from e
 
     def __str__(self) -> str:
-        return (f"Model type: {self.model_type.name}, "
-                f"Model name: {self.model_name}, "
-                f"Revision: {self.revision}, "
-                f"Serial number: {self.serial_number}, "
-                f"Manufacturer: {self.manufacturer}, "
-                f"CPU model: {self.cpu_model}, "
-                f"Memory size: {self.memory_size}Mb")
+        return (
+            f"Model type: {self.model_type.name}, "
+            f"Model name: {self.model_name}, "
+            f"Revision: {self.revision}, "
+            f"Serial number: {self.serial_number}, "
+            f"Manufacturer: {self.manufacturer}, "
+            f"CPU model: {self.cpu_model}, "
+            f"Memory size: {self.memory_size}Mb"
+        )
 
     @staticmethod
     def decode_revision_code(revision_code: str) -> dict[str, Any]:
@@ -135,7 +138,7 @@ class RPiSystemInfo(metaclass=Singleton):
             raise ValueError("Revision code cannot be empty or None")
         if not isinstance(revision_code, str):
             raise TypeError(f"Revision code must be a string, got {type(revision_code).__name__}")
-        if not revision_code.startswith(('0x', '0X')) and not all(c in hexdigits for c in revision_code):
+        if not revision_code.startswith(("0x", "0X")) and not all(c in hexdigits for c in revision_code):
             raise ValueError(f"Invalid revision code format: '{revision_code}'. Expected hex string")
 
         old_boards_revisions_decoder = {
@@ -182,14 +185,14 @@ class RPiSystemInfo(metaclass=Singleton):
                 if manufacturer_index >= len(manufacturers):
                     raise ValueError(f"Invalid manufacturer index: {manufacturer_index}")
                 return {
-                    'model_type': ModelType((code & 0xFF0) >> 4),
-                    'revision': f"1.{code & 0xF}",
-                    'memory_size': memory_sizes[memory_index],
-                    'cpu_model': cpu_models[cpu_index],
-                    'manufacturer': manufacturers[manufacturer_index],
-                    'overvoltage_allowed': bool((code & 0x80000000) >> 31),
-                    'otp_programming_allowed': bool((code & 0x40000000) >> 30),
-                    'otp_reading_allowed': bool((code & 0x20000000) >> 29),
+                    "model_type": ModelType((code & 0xFF0) >> 4),
+                    "revision": f"1.{code & 0xF}",
+                    "memory_size": memory_sizes[memory_index],
+                    "cpu_model": cpu_models[cpu_index],
+                    "manufacturer": manufacturers[manufacturer_index],
+                    "overvoltage_allowed": bool((code & 0x80000000) >> 31),
+                    "otp_programming_allowed": bool((code & 0x40000000) >> 30),
+                    "otp_reading_allowed": bool((code & 0x20000000) >> 29),
                 }
             else:
                 # Old style revision code decoding
@@ -197,22 +200,21 @@ class RPiSystemInfo(metaclass=Singleton):
                     raise ValueError(f"Unknown old board revision code: 0x{code:04X}")
                 board_data = old_boards_revisions_decoder[code]
                 return {
-                    'model_type': board_data[0],
-                    'revision': board_data[1],
-                    'memory_size': board_data[2],
-                    'cpu_model': board_data[3],
-                    'manufacturer': board_data[4],
+                    "model_type": board_data[0],
+                    "revision": board_data[1],
+                    "memory_size": board_data[2],
+                    "cpu_model": board_data[3],
+                    "manufacturer": board_data[4],
                 }
         except (IndexError, ValueError) as e:
             raise ValueError(f"Failed to decode revision code 0x{code:08X}: {e}") from e
         except Exception as e:
             raise RuntimeError(f"Unexpected error while decoding revision code: {e}") from e
 
-
     @staticmethod
     def float_to_int_if_zero_fraction(x: float) -> float | int:
         """Converts a real number to an integer if its fractional part is zero.
-           Otherwise, returns the passed value.
+        Otherwise, returns the passed value.
         """
         if isinstance(x, float):
             if x.is_integer():
@@ -223,17 +225,17 @@ class RPiSystemInfo(metaclass=Singleton):
             raise TypeError("Floating point number expected")
 
     @staticmethod
-    def convert_frequency(frequency: float, unit: FrequencyUnit = 'MHz') -> float | int:
+    def convert_frequency(frequency: float, unit: FrequencyUnit = "MHz") -> float | int:
         """Converts input frequency value from Hz to specified unit."""
         result = 0.0
         match unit:
-            case 'Hz':
+            case "Hz":
                 result = frequency
-            case 'KHz':
+            case "KHz":
                 result = frequency / 10**3
-            case 'MHz':
+            case "MHz":
                 result = frequency / 10**6
-            case 'GHz':
+            case "GHz":
                 result = frequency / 10**9
             case _:
                 raise IncorrectFrequencyUnitError(f"Requested unknown CPU frequency unit: {unit}")
@@ -267,7 +269,7 @@ class RPiSystemInfo(metaclass=Singleton):
             self.logger.error(f"Shell command '{command}' failed (code {e.returncode}): {e.stderr.strip()}")
         except FileNotFoundError:
             self.logger.error(f"Command not found: {command}")
-        return ''
+        return ""
 
     @cached_property
     def model_name(self) -> str:
@@ -330,7 +332,7 @@ class RPiSystemInfo(metaclass=Singleton):
             lines = output.splitlines()
             for line in lines:
                 for cache in cache_types:
-                    match = re.match(fr"{cache} cache:\s*(\S+)", line)
+                    match = re.match(rf"{cache} cache:\s*(\S+)", line)
                     if match:
                         cache_sizes[cache] = match.group(1)
                         continue
@@ -380,12 +382,12 @@ class RPiSystemInfo(metaclass=Singleton):
             try:
                 cmd = f"vcgencmd codec_enabled {codec}"
                 output = self.__get_shell_cmd_output(cmd)
-                if '=' not in output:
+                if "=" not in output:
                     self.logger.warning(f"Unexpected output format for codec '{codec}': {output!r}")
                     continue
-                _, status_str = output.split('=', 1)
+                _, status_str = output.split("=", 1)
                 status_str = status_str.strip().lower()
-                status_dict[codec] = (status_str == "enabled")
+                status_dict[codec] = status_str == "enabled"
             except subprocess.CalledProcessError as e:
                 self.logger.error(f"Failed to check codec '{codec}' (exit code {e.returncode}): {e.stderr}")
             except Exception as e:
@@ -465,7 +467,7 @@ class RPiSystemInfo(metaclass=Singleton):
             self.logger.error(f"Error while converting CPU temperature value '{result}' to float")
         return None
 
-    def get_cpu_core_frequencies(self, unit: FrequencyUnit = 'MHz') -> dict[str, int | float]:
+    def get_cpu_core_frequencies(self, unit: FrequencyUnit = "MHz") -> dict[str, int | float]:
         """Retrieves min, max and current CPU core frequencies in specified units (Hz, KHz, MHz or GHz).
         If for some frequency type the command fails, then 0 will return for it.
 
@@ -476,9 +478,9 @@ class RPiSystemInfo(metaclass=Singleton):
             Dict with CPU core frequencies values in the specified unit.
         """
         core_frequencies = {
-            'min': 0.0,
-            'max': 0.0,
-            'cur': 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "cur": 0.0,
         }
         for ft in core_frequencies:
             command = f"cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_{ft}_freq"
@@ -508,16 +510,16 @@ class RPiSystemInfo(metaclass=Singleton):
             self.logger.error(f"Error while converting CPU usage value '{result}' to float")
         return None
 
-    def get_ram_info(self, unit: str = 'm') -> dict[str, Any]:
+    def get_ram_info(self, unit: str = "m") -> dict[str, Any]:
         """Retrieves RAM info in specified units (b, k, m, g). Uses a safer approach.
 
         Returns:
             The RAM info dict with total, used, free, cache and available memory volume in passed unit.
         """
-        ram_fields = ['total', 'used', 'free', 'cache', 'available']
+        ram_fields = ["total", "used", "free", "cache", "available"]
         ram_info: dict[str, Any] = dict.fromkeys(ram_fields, 0)
-        ram_info['size'] = self.memory_size
-        if unit not in ['b', 'k', 'm', 'g']:
+        ram_info["size"] = self.memory_size
+        if unit not in ["b", "k", "m", "g"]:
             self.logger.error(f"Requested unknown RAM volume unit: {unit}")
             return ram_info
         command = f"free -{unit}"
@@ -526,23 +528,23 @@ class RPiSystemInfo(metaclass=Singleton):
             try:
                 lines = output.splitlines()
                 fields = lines[1].split()
-                ram_info['total'] = int(fields[1])
-                ram_info['used'] = int(fields[2])
-                ram_info['free'] = int(fields[3])
-                ram_info['cache'] = int(fields[5])
-                ram_info['available'] = int(fields[6])
-                available = ram_info.get('available')
-                total = ram_info.get('total')
+                ram_info["total"] = int(fields[1])
+                ram_info["used"] = int(fields[2])
+                ram_info["free"] = int(fields[3])
+                ram_info["cache"] = int(fields[5])
+                ram_info["available"] = int(fields[6])
+                available = ram_info.get("available")
+                total = ram_info.get("total")
                 if available is not None and total is not None and total != 0:
-                    ram_info['usage'] = round(100.0 - available / total * 100.0, 1)
+                    ram_info["usage"] = round(100.0 - available / total * 100.0, 1)
                 else:
-                    ram_info['usage'] = None
+                    ram_info["usage"] = None
                     self.logger.warning("RAM available or total is invalid (available=%s, total=%s)", available, total)
             except (IndexError, ValueError) as parse_err:
                 self.logger.error(f"Failed to parse 'free' command output: {output} ({parse_err})")
         return ram_info
 
-    def get_network_interface_info(self, interface: str='eth0') -> dict[str, str]:
+    def get_network_interface_info(self, interface: str = "eth0") -> dict[str, str]:
         """Retrieves network interface info. Uses a safer approach.
 
         Args:
@@ -552,48 +554,48 @@ class RPiSystemInfo(metaclass=Singleton):
             The network interface info dict with mac address, ip address, network mask,
             broadcast ip address, default gateway ip address and state.
         """
-        nic_fields = ['mac', 'ip', 'mask', 'broadcast', 'gateway', 'state']
+        nic_fields = ["mac", "ip", "mask", "broadcast", "gateway", "state"]
         nic_info = dict.fromkeys(nic_fields, "")
         try:
             if interface in os.listdir(self._NET_PATH):
                 try:
                     mac_addr_cmd = f"cat /sys/class/net/{interface}/address"
                     mac_addr_output = self.__get_shell_cmd_output(mac_addr_cmd)
-                    nic_info['mac'] = mac_addr_output.upper()
+                    nic_info["mac"] = mac_addr_output.upper()
 
                     ip_link_cmd = f"ip -o link show {interface}"
                     ip_link_output = self.__get_shell_cmd_output(ip_link_cmd)
                     if "state UP" not in ip_link_output and "LOWER_UP" not in ip_link_output:
-                        nic_info['state'] = 'DOWN'
+                        nic_info["state"] = "DOWN"
                         self.logger.warning(f"Interface {interface} is DOWN")
                         return nic_info
 
                     ip_addr_cmd = f"ip -4 addr show {interface}"
                     ip_addr_cmd_output = self.__get_shell_cmd_output(ip_addr_cmd)
                     if ip_addr_cmd_output:
-                        nic_info['state'] = 'UP'
-                        ip_match = re.search(r'inet (\d+\.\d+\.\d+\.\d+)/(\d+)', ip_addr_cmd_output)
-                        broadcast_match = re.search(r'brd (\d+\.\d+\.\d+\.\d+)', ip_addr_cmd_output)
+                        nic_info["state"] = "UP"
+                        ip_match = re.search(r"inet (\d+\.\d+\.\d+\.\d+)/(\d+)", ip_addr_cmd_output)
+                        broadcast_match = re.search(r"brd (\d+\.\d+\.\d+\.\d+)", ip_addr_cmd_output)
                         if not ip_match or not broadcast_match:
                             self.logger.error(f"Failed to parse '{ip_addr_cmd}' command output: {ip_addr_cmd_output}")
                         else:
-                            nic_info['ip'] = ip_match.group(1)
+                            nic_info["ip"] = ip_match.group(1)
                             prefix_len = int(ip_match.group(2))
-                            nic_info['broadcast'] = broadcast_match.group(1)
-                            mask = (0xffffffff << (32 - prefix_len)) & 0xffffffff
+                            nic_info["broadcast"] = broadcast_match.group(1)
+                            mask = (0xFFFFFFFF << (32 - prefix_len)) & 0xFFFFFFFF
                             mask_bytes = [
-                                (mask >> 24) & 0xff,
-                                (mask >> 16) & 0xff,
-                                (mask >> 8) & 0xff,
-                                mask & 0xff,
+                                (mask >> 24) & 0xFF,
+                                (mask >> 16) & 0xFF,
+                                (mask >> 8) & 0xFF,
+                                mask & 0xFF,
                             ]
-                            nic_info['mask'] = ".".join(map(str, mask_bytes))
+                            nic_info["mask"] = ".".join(map(str, mask_bytes))
 
                             ip_route_cmd = f"ip route show | grep ^def.*{interface}"
                             ip_route_output = self.__get_shell_cmd_output(ip_route_cmd)
-                            gateway_match = re.search(r'^default via (\d+\.\d+\.\d+\.\d+)', ip_route_output)
+                            gateway_match = re.search(r"^default via (\d+\.\d+\.\d+\.\d+)", ip_route_output)
                             if gateway_match:
-                                nic_info['gateway'] = gateway_match.group(1)
+                                nic_info["gateway"] = gateway_match.group(1)
                     else:
                         self.logger.error(f"Empty output for command {ip_addr_cmd}")
                         return nic_info
@@ -606,7 +608,7 @@ class RPiSystemInfo(metaclass=Singleton):
         self.logger.debug(f"Network interface {interface} info: {', '.join(f'{k}: {v}' for k, v in nic_info.items())}")
         return nic_info
 
-    def get_bluetooth_interface_info(self, interface: str = 'hci0') -> dict[str, str]:
+    def get_bluetooth_interface_info(self, interface: str = "hci0") -> dict[str, str]:
         """
         Retrieves detailed information about a specific Bluetooth interface.
 
@@ -617,7 +619,7 @@ class RPiSystemInfo(metaclass=Singleton):
             A dictionary with keys: 'mac', 'state', 'name', 'manufacturer'.
             Values are strings; empty if the interface is not found or parsing fails.
         """
-        bt_fields = ['mac', 'state', 'name', 'manufacturer']
+        bt_fields = ["mac", "state", "name", "manufacturer"]
         bt_info = dict.fromkeys(bt_fields, "")
         command = "hciconfig -a"
         output = self.__get_shell_cmd_output(command)
@@ -625,7 +627,7 @@ class RPiSystemInfo(metaclass=Singleton):
             lines = output.splitlines()
             start_idx = None
             for i, line in enumerate(lines):
-                if line.strip().startswith(interface + ':'):
+                if line.strip().startswith(interface + ":"):
                     start_idx = i
                     break
             if start_idx is None:
@@ -633,34 +635,34 @@ class RPiSystemInfo(metaclass=Singleton):
                 return {}
             block_lines = []
             for j in range(start_idx, len(lines)):
-                if j > start_idx and lines[j].strip().startswith('hci') and ':' in lines[j]:
+                if j > start_idx and lines[j].strip().startswith("hci") and ":" in lines[j]:
                     break
                 block_lines.append(lines[j])
 
             for line in block_lines:
                 stripped = line.strip()
                 try:
-                    if 'BD Address:' in stripped:
-                        parts = stripped.split('BD Address:')
+                    if "BD Address:" in stripped:
+                        parts = stripped.split("BD Address:")
                         if len(parts) > 1:
                             mac_addr = parts[1].strip().split()[0]
                             if mac_addr:
-                                bt_info['mac'] = mac_addr.upper()
-                    elif 'Name:' in stripped:
-                        parts = stripped.split('Name:')
+                                bt_info["mac"] = mac_addr.upper()
+                    elif "Name:" in stripped:
+                        parts = stripped.split("Name:")
                         if len(parts) > 1:
                             name = parts[1].strip().strip("'")
                             if name:
-                                bt_info['name'] = name
-                    elif 'Manufacturer:' in stripped:
-                        parts = stripped.split('Manufacturer:')
+                                bt_info["name"] = name
+                    elif "Manufacturer:" in stripped:
+                        parts = stripped.split("Manufacturer:")
                         if len(parts) > 1:
                             manufacturer = parts[1].strip()
                             if manufacturer:
-                                bt_info['manufacturer'] = manufacturer
-                    elif stripped and ':' not in stripped and not stripped.startswith('hci'):
-                        if not bt_info['state']:
-                            bt_info['state'] = stripped
+                                bt_info["manufacturer"] = manufacturer
+                    elif stripped and ":" not in stripped and not stripped.startswith("hci"):
+                        if not bt_info["state"]:
+                            bt_info["state"] = stripped
                 except (IndexError, ValueError, AttributeError) as parse_err:
                     self.logger.warning(f"Failed to parse line '{stripped}': {parse_err}")
         else:
@@ -685,19 +687,21 @@ class RPiSystemInfo(metaclass=Singleton):
                     return networks
                 for line in lines:
                     values = line.split()
-                    if line.startswith('*'):
+                    if line.startswith("*"):
                         values = values[1:]
                     k = values.index("Mbit/s")
-                    networks.append({
-                        'ssid': " ".join(values[1:k-3]),
-                        'bssid': values[0],
-                        'mode': values[k-3],
-                        'channel': values[k-2],
-                        'rate': " ".join(values[k-1:k+1]),
-                        'signal': values[k+1],
-                        'bars': values[k+2],
-                        'security': " ".join(values[k+3:]),
-                    })
+                    networks.append(
+                        {
+                            "ssid": " ".join(values[1 : k - 3]),
+                            "bssid": values[0],
+                            "mode": values[k - 3],
+                            "channel": values[k - 2],
+                            "rate": " ".join(values[k - 1 : k + 1]),
+                            "signal": values[k + 1],
+                            "bars": values[k + 2],
+                            "security": " ".join(values[k + 3 :]),
+                        },
+                    )
                 return networks
             except Exception as e:
                 self.logger.error(f"Unexpected error while retrieving Wi-Fi networks info: {e}")
@@ -734,8 +738,9 @@ class RPiSystemInfo(metaclass=Singleton):
             self.logger.debug("Internet connection is active.")
             return True
         except urllib.error.URLError as e:
-            self.logger.error(f"URLError while checking connection: {e.reason}. " \
-                "Internet connection is missing or blocked.")
+            self.logger.error(
+                f"URLError while checking connection: {e.reason}. Internet connection is missing or blocked.",
+            )
         except TimeoutError:
             self.logger.error("Connection timeout. Internet may be slow or unavailable.")
         except Exception as e:
@@ -752,21 +757,22 @@ class RPiSystemInfo(metaclass=Singleton):
         """
         ip_service_urls = [
             "http://icanhazip.com",
-            "http://api.ipify.org"
-            "http://myexternalip.com/raw",
+            "http://api.ipify.orghttp://myexternalip.com/raw",
         ]
-        public_ip = ''
+        public_ip = ""
         for ip_service_url in ip_service_urls:
             self.logger.debug(f"Trying to get public IP address via {ip_service_url}...")
             try:
                 response: http.client.HTTPResponse
                 with urllib.request.urlopen(ip_service_url, timeout=timeout) as response:
-                    public_ip = response.read().decode('utf-8').strip()
+                    public_ip = response.read().decode("utf-8").strip()
                     self.logger.debug(f"Public IP address: {public_ip}")
                     return public_ip
             except urllib.error.URLError as e:
-                self.logger.error(f"URLError while getting public IP address: {e.reason}. " \
-                    "Maybe there is no Internet or the service is unavailable.")
+                self.logger.error(
+                    f"URLError while getting public IP address: {e.reason}. "
+                    "Maybe there is no Internet or the service is unavailable.",
+                )
             except TimeoutError:
                 self.logger.error("Timeout while getting public IP address.")
             except Exception as e:
@@ -874,43 +880,43 @@ class RPiSystemInfo(metaclass=Singleton):
                 Each dict contains: device, type, name, oemid (OID), serial number, manufacturer id,
                 manufacturer, date of manufactured, logical block size, physical block size, hardware
                 revision, firmware revision, filesystem and CID, CSD, DSR, SCR, OCR registers values.
-            """
+        """
         manufacturers_db = {
-            ('MMC', '0x000000'): 'SanDisk',
-            ('MMC', '0x000002'): 'Kingston, or SanDisk',
-            ('MMC', '0x000003'): 'Toshiba',
-            ('MMC', '0x000005'): 'Unknown',
-            ('MMC', '0x000006'): 'Unknown',
-            ('MMC', '0x000011'): 'Toshiba',
-            ('MMC', '0x000013'): 'Micron',
-            ('MMC', '0x000015'): 'Samsung, SanDisk, or LG',
-            ('MMC', '0x000037'): 'KingMax',
-            ('MMC', '0x000044'): 'ATP',
-            ('MMC', '0x000045'): 'SanDisk Corporation',
-            ('MMC', '0x000070'): 'Kingston',
-            ('MMC', '0x00002c'): 'Kingston',
-            ('MMC', '0x0000fe'): 'Micron',
-            ('SD', '0x000001'): 'Panasonic',
-            ('SD', '0x000002'): 'Kingston, Toshiba, or Viking',
-            ('SD', '0x000003'): 'SanDisk',
-            ('SD', '0x000008'): 'Silicon Power',
-            ('SD', '0x000018'): 'Infineon',
-            ('SD', '0x000027'): 'Phison Electronics Corporation',
-            ('SD', '0x000028'): 'Lexar',
-            ('SD', '0x000030'): 'SanDisk',
-            ('SD', '0x000031'): 'Silicon Power',
-            ('SD', '0x000033'): 'STMicroelectronics',
-            ('SD', '0x000041'): 'Kingston',
-            ('SD', '0x00006f'): 'STMicroelectronics',
-            ('SD', '0x000074'): 'Transcend',
-            ('SD', '0x000076'): 'Patriot',
-            ('SD', '0x000082'): 'Gobe, or Sony',
-            ('SD', '0x000089'): 'Unknown',
-            ('SD', '0x00001b'): 'Samsung, or Transcend',
-            ('SD', '0x00001c'): 'Transcend',
-            ('SD', '0x00001d'): 'AData, or Corsair',
-            ('SD', '0x00001e'): 'Transcend',
-            ('SD', '0x00001f'): 'Kingston',
+            ("MMC", "0x000000"): "SanDisk",
+            ("MMC", "0x000002"): "Kingston, or SanDisk",
+            ("MMC", "0x000003"): "Toshiba",
+            ("MMC", "0x000005"): "Unknown",
+            ("MMC", "0x000006"): "Unknown",
+            ("MMC", "0x000011"): "Toshiba",
+            ("MMC", "0x000013"): "Micron",
+            ("MMC", "0x000015"): "Samsung, SanDisk, or LG",
+            ("MMC", "0x000037"): "KingMax",
+            ("MMC", "0x000044"): "ATP",
+            ("MMC", "0x000045"): "SanDisk Corporation",
+            ("MMC", "0x000070"): "Kingston",
+            ("MMC", "0x00002c"): "Kingston",
+            ("MMC", "0x0000fe"): "Micron",
+            ("SD", "0x000001"): "Panasonic",
+            ("SD", "0x000002"): "Kingston, Toshiba, or Viking",
+            ("SD", "0x000003"): "SanDisk",
+            ("SD", "0x000008"): "Silicon Power",
+            ("SD", "0x000018"): "Infineon",
+            ("SD", "0x000027"): "Phison Electronics Corporation",
+            ("SD", "0x000028"): "Lexar",
+            ("SD", "0x000030"): "SanDisk",
+            ("SD", "0x000031"): "Silicon Power",
+            ("SD", "0x000033"): "STMicroelectronics",
+            ("SD", "0x000041"): "Kingston",
+            ("SD", "0x00006f"): "STMicroelectronics",
+            ("SD", "0x000074"): "Transcend",
+            ("SD", "0x000076"): "Patriot",
+            ("SD", "0x000082"): "Gobe, or Sony",
+            ("SD", "0x000089"): "Unknown",
+            ("SD", "0x00001b"): "Samsung, or Transcend",
+            ("SD", "0x00001c"): "Transcend",
+            ("SD", "0x00001d"): "AData, or Corsair",
+            ("SD", "0x00001e"): "Transcend",
+            ("SD", "0x00001f"): "Kingston",
         }
         sd_cards: list[dict[str, str | None]] = []
         mmc_path = "/sys/bus/mmc/devices"
@@ -959,12 +965,11 @@ class RPiSystemInfo(metaclass=Singleton):
                     except (OSError, UnicodeDecodeError):
                         info[field] = None
 
-
-                if info['type'] is not None and info['manufacturer_id'] is not None:
-                    key = (info['type'], info['manufacturer_id'])
-                    info['manufacturer'] = manufacturers_db.get(key)
+                if info["type"] is not None and info["manufacturer_id"] is not None:
+                    key = (info["type"], info["manufacturer_id"])
+                    info["manufacturer"] = manufacturers_db.get(key)
                 else:
-                    info['manufacturer'] = None
+                    info["manufacturer"] = None
 
                 fs_info = None
                 block_dir = os.path.join(dev_dir, "block")
@@ -1025,14 +1030,14 @@ class RPiSystemInfo(metaclass=Singleton):
                     try:
                         parts = line.split()
                         process_info = {
-                            'user': parts[0],
-                            'pid': parts[1],
-                            'cpu_percent': float(parts[2]),
-                            'mem_percent': float(parts[3]),
-                            'command': " ".join(parts[4:-5]),
-                            'started_on': datetime.strptime(" ".join(parts[-5:]), "%a %b %d %H:%M:%S %Y"),
+                            "user": parts[0],
+                            "pid": parts[1],
+                            "cpu_percent": float(parts[2]),
+                            "mem_percent": float(parts[3]),
+                            "command": " ".join(parts[4:-5]),
+                            "started_on": datetime.strptime(" ".join(parts[-5:]), "%a %b %d %H:%M:%S %Y"),
                         }
-                        if process_info['command'] != 'ps':
+                        if process_info["command"] != "ps":
                             processes.append(process_info)
                     except (ValueError, IndexError) as parse_error:
                         self.logger.warning(f"Skipping malformed process line: {line} ({parse_error})")
@@ -1082,11 +1087,13 @@ class RPiSystemInfo(metaclass=Singleton):
                         created_str = match.group(1)
                         created_dt = datetime.strptime(created_str, "%a %b %d %H:%M:%S %Y")
 
-                        sessions.append({
-                            "name": name_part.strip(),
-                            "windows": windows,
-                            "created": created_dt,
-                        })
+                        sessions.append(
+                            {
+                                "name": name_part.strip(),
+                                "windows": windows,
+                                "created": created_dt,
+                            },
+                        )
                     except (ValueError, IndexError) as parse_error:
                         self.logger.warning(f"Skipping malformed line: {line} ({parse_error})")
                         continue
@@ -1132,15 +1139,13 @@ class RPiSystemInfo(metaclass=Singleton):
                 descriptions.append("Soft temperature limit active")
             if not descriptions:
                 descriptions.append("No active issues")
-            status["description"] = '; '.join(descriptions)
+            status["description"] = "; ".join(descriptions)
             return status
         except ValueError as e:
             self.logger.error(f"Error while converting throttled value {throttled} to int: {e}")
         except Exception as e:
             self.logger.error(f"Failed to read throttled status: {e}")
         return None
-
-
 
 
 def main() -> None:
@@ -1156,15 +1161,17 @@ def main() -> None:
         throttled_state = rpi_info.get_throttled_state()
         if throttled_state:
             logger.info(f"Throttled state: {throttled_state.get('description', 'Unknown')}")
-        for interface in ['eth0', 'wlan0']:
+        for interface in ["eth0", "wlan0"]:
             nic_info = rpi_info.get_network_interface_info(interface)
-            mac_address = nic_info['mac'] or 'Unknown'
-            ip_address = nic_info['ip'] or 'Not connected'
-            mask = nic_info['mask'] or 'Not connected'
-            default_gateway = nic_info['gateway'] or 'Not connected'
-            logger.info(f"{interface} interface: MAC address {mac_address}, IP address {ip_address}, " \
-                    f"Subnet mask: {mask}, Default gateway: {default_gateway}")
-        wifi_network_name = rpi_info.get_wifi_network_name() or 'Not connected'
+            mac_address = nic_info["mac"] or "Unknown"
+            ip_address = nic_info["ip"] or "Not connected"
+            mask = nic_info["mask"] or "Not connected"
+            default_gateway = nic_info["gateway"] or "Not connected"
+            logger.info(
+                f"{interface} interface: MAC address {mac_address}, IP address {ip_address}, "
+                f"Subnet mask: {mask}, Default gateway: {default_gateway}",
+            )
+        wifi_network_name = rpi_info.get_wifi_network_name() or "Not connected"
         logger.info(f"Wi-Fi network name: {wifi_network_name}")
         if rpi_info.check_internet_connection():
             logger.info(f"Internet connection is active, public IP address: {rpi_info.get_public_ip()}")
@@ -1177,9 +1184,11 @@ def main() -> None:
                 cpu_usage = rpi_info.get_cpu_usage()
                 ram_info = rpi_info.get_ram_info()
                 logger.info(f"CPU: temperature {cpu_temp} \xb0C, frequency {cpu_freq['cur']} MHz, usage {cpu_usage}%")
-                logger.info(f"RAM: total {ram_info['total']} Mb, used {ram_info['used']} Mb, " \
-                        f"free {ram_info['free']} Mb, cache {ram_info['cache']} Mb, " \
-                        f"available {ram_info['available']} Mb")
+                logger.info(
+                    f"RAM: total {ram_info['total']} Mb, used {ram_info['used']} Mb, "
+                    f"free {ram_info['free']} Mb, cache {ram_info['cache']} Mb, "
+                    f"available {ram_info['available']} Mb",
+                )
             except Exception as e:
                 logger.error(f"Error during system info retrieval: {e}")
             time.sleep(2)

@@ -12,7 +12,7 @@ body {
     padding: 20px 0px 0px 0px;
     position: relative;
     margin: 0 auto;
-    box-sizing: border-box;   
+    box-sizing: border-box;
 }
 
 .container:after, .row:after {
@@ -47,7 +47,7 @@ body {
 
 @media (min-width: 576px) {
     .title {
-        margin-top: 20px;    
+        margin-top: 20px;
     }
 }
 
@@ -111,11 +111,11 @@ th, td {
 }
 
 th:first-child, td:first-child {
-    padding-left: 0; 
+    padding-left: 0;
 }
 
 th:last-child, td:last-child {
-    padding-right: 0; 
+    padding-right: 0;
 }
 
 .t-row {
@@ -254,7 +254,7 @@ table.sortable tr:hover td{
         flex-direction: row;
         justify-content: space-between;
     }
-    
+
     .tab-button {
         flex: 1;
         margin-right: 5px;
