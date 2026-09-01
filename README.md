@@ -72,6 +72,11 @@ chmod +x scripts/run.sh
 ```
 The script automatically loads .env, sets up the environment, and starts Gunicorn.
 
+## 📦 Requirements
+
+- Python 3.11+
+- Works on all Raspberry Pi models running Raspberry Pi OS / Raspbian
+
 ## 🛠️  Configuration
 
 The configuration file is located in the `.env` file. You can copy the `env.example` to `.env` and make your edits.
@@ -79,12 +84,7 @@ The configuration file is located in the `.env` file. You can copy the `env.exam
 cp env.example .env
 ```
 
-## Requirements
-
-- Python 3.11+
-- Works on all Raspberry Pi models running Raspberry Pi OS / Raspbian
-
-## Color Coding
+### Color Coding
 
 Thresholds for CPU usage and temperature, as well as memory usage:
 
@@ -98,7 +98,7 @@ Thresholds for CPU usage and temperature, as well as memory usage:
 
 The table shows my settings, you can specify your desired ones in the env file.
 
-## ⚙️  Aystemd Service Installation
+## ⚙️  Systemd Service Installation
 
 The project includes installation and uninstallation scripts that set up rpi-system-info as a systemd service. The service automatically starts on boot and restarts on failure.
 
