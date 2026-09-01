@@ -22,4 +22,5 @@ repos:
         additional_dependencies:
           - Flask
           - Flask-Caching
+          - pytest
         pass_filenames: true

@@ -134,7 +134,7 @@ class RPiSystemInfo(metaclass=Singleton):
             ValueError: If revision code is invalid or cannot be decoded
             TypeError: If revision code is not a string
         """
-        if not revision_code:
+        if revision_code is None or not revision_code:
             raise ValueError("Revision code cannot be empty or None")
         if not isinstance(revision_code, str):
             raise TypeError(f"Revision code must be a string, got {type(revision_code).__name__}")

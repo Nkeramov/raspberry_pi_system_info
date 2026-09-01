@@ -51,6 +51,8 @@ build-backend = "setuptools.build_meta"
 dev = [
     "mypy>=2.3.0",
     "ruff>=0.16.2",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
 ]
 
 [tool.setuptools]
@@ -114,3 +116,8 @@ skip-magic-trailing-comma = false
 
 [tool.ruff.lint.isort]
 known-first-party = ["rpi_system_info"]
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+addopts = "--cov=src.rpi_system_info --cov-report=term-missing"
