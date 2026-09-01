@@ -1,0 +1,15 @@
+[Unit]
+Description=RPi System Info Web Service
+After=network.target
+
+[Service]
+Type=simple
+User={{USER}}
+WorkingDirectory={{PROJECT_DIR}}
+EnvironmentFile={{PROJECT_DIR}}/.env
+ExecStart={{UV_PATH}} run gunicorn --bind 0.0.0.0:${PORT} 'src.rpi_system_info.app:create_app()'
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

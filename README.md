@@ -44,44 +44,33 @@ The web server is based on Flask framework. Gunicorn is used to launch. By defau
 ## 🚀 Quick start
 
 ### Prerequisites
-Clone repository:
+
+Clone repository and switch to repo directory:
 ```bash
 git clone https://github.com/Nkeramov/rpi_system_info.git
-```
-Switch to repo directory:
-```bash
 cd rpi_system_info
 ```
-### Traditional method with venv and pip
-Create and activate virtual environment:
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-Install dependencies and run:
-```bash
-pip install -r requirements.txt
-gunicorn --bind 0.0.0.0:8080 main:app
-```
-### Modern method with uv
+
+### Install dependencies and create a virtual environment
+
+The project uses uv for dependency management. All dependencies are defined in pyproject.toml – there is no requirements.txt.
+
 Install dependencies and create virtual environment (.venv) automatically:
 ```bash
 uv sync
 ```
+
 Run the project (virtual environment is handled automatically):
 ```bash
 uv run gunicorn --bind 0.0.0.0:8080 main:app
 ```
-Or with explicit activation:
-```bash
-source .venv/bin/activate       # After uv sync
-gunicorn --bind 0.0.0.0:8080 main:app
-```
 
-Also you can use the launch script `run.sh`, making it executable first
+Also you can use the helper script `run.sh` (located in `scripts/`), making it executable first
 ```bash
-chmod +x run.sh
+chmod +x scripts/run.sh
+./scripts/run.sh
 ```
+The script automatically loads .env, sets up the environment, and starts Gunicorn.
 
 ## 🛠️  Configuration
 
@@ -109,19 +98,63 @@ Thresholds for CPU usage and temperature, as well as memory usage:
 
 The table shows my settings, you can specify your desired ones in the env file.
 
-## ⚙️  Adding to startup
+## ⚙️  Aystemd Service Installation
 
-You can set up automatic script launch at system startup.
+The project includes installation and uninstallation scripts that set up rpi-system-info as a systemd service. The service automatically starts on boot and restarts on failure.
 
-Open the `/etc/rc.local` file in editor:
+### Requirements
+uv installed and available in the user's PATH (or specify the path manually).
+
+A .env file in the project root with at least the PORT variable defined.
+
+### Installation
+From the project root, run:
+
 ```bash
-sudo nano /etc/rc.local
+sudo ./scripts/install.sh
 ```
-Add to the end of file this line:
+
+The script will:
+- Detect the uv binary automatically (checks the user's PATH and common locations like ~/.local/bin/uv).
+- Generate the systemd unit file from the template scripts/rpi-system-info.service.
+- Enable and start the service.
+
+If automatic detection fails, you can manually specify the uv path:
 ```bash
-/home/pi/rpi_system_info/run.sh &
+sudo UV_PATH=/home/pi/.local/bin/uv ./scripts/install.sh
 ```
-Press Ctrl+O → Enter → Ctrl+X to save and exit.
+
+### Uninstallation
+```bash
+sudo ./scripts/uninstall.sh
+```
+This stops, disables, and removes the service file.
+
+### Managing the Service
+Check status:
+```bash
+sudo systemctl status rpi-system-info
+```
+
+View logs:
+```bash
+sudo journalctl -u rpi-system-info -f
+```
+
+Restart manually:
+```bash
+sudo systemctl restart rpi-system-info
+```
+
+Stop/start:
+```bash
+sudo systemctl stop rpi-system-info / sudo systemctl start rpi-system-info
+```
+
+### Notes
+- The service runs under the user who executed sudo (usually pi).
+- The unit file is installed to /etc/systemd/system/rpi-system-info.service.
+- The service uses EnvironmentFile to load variables from .env, so $PORT is expanded at runtime.
 
 ## 🤝 Contributing
 
